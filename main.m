@@ -10,15 +10,11 @@
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        NSMutableDictionary *statistics;
-        NSString *input;
+        NSMutableDictionary *statistics = [[NSMutableDictionary alloc] init];
         NSArray *words;
-        char *zInput;
+        NSString *nsstr_input = @"foo bar foo bar";
         
-        scanf("%s", zInput);
-        input = [NSString stringWithUTF8String:zInput];
-        words = [input componentsSeparatedByString:@" "];
-        
+        words = [nsstr_input componentsSeparatedByString:@" "];
         for (NSString *word in words) {
             NSNumber *count = [statistics valueForKey:word];
             
@@ -29,12 +25,11 @@ int main(int argc, const char * argv[]) {
             }
         }
         
-        NSArray *uniqueWords = [NSArray arrayWithArray:[statistics allValues]];
-        [uniqueWords sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+        NSArray *uniqueWords = [[statistics allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
             NSNumber *a_cnt = [statistics valueForKey:a];
             NSNumber *b_cnt = [statistics valueForKey:b];
             
-            return [a_cnt compare:b_cnt];
+            return [b_cnt compare:a_cnt];
         }];
         
         NSUInteger top_cnt = 5;
@@ -45,7 +40,7 @@ int main(int argc, const char * argv[]) {
         NSString *word;
         for (int i = 0; i < top_cnt; i++) {
             word = [uniqueWords objectAtIndex:i];
-            NSLog(@"%@: %ld", word, [[statistics valueForKey:word] integerValue]);
+            NSLog(@"%@:%ld", word, [[statistics valueForKey:word] integerValue]);
         }
     }
     return 0;
