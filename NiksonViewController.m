@@ -15,6 +15,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *lblDate;
 @property (weak, nonatomic) IBOutlet UIButton *btnDo;
 @property (weak, nonatomic) IBOutlet UILabel *lblWeatherText;
+@property (weak, nonatomic) IBOutlet UITextField *tfInput;
 
 @end
 
@@ -38,27 +39,42 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+- (IBAction)onTfInputEditingDidEnd:(UITextField *)sender {
+    
+}
 
 - (IBAction) doThis: (id)sender {
-    NSURL *url = [[NSURL alloc] initWithString:@"http://query.yahooapis.com/v1/public/yql?q=select%20item%20from%20weather.forecast%20where%20woeid%20%3D%20834463&format=json"];
+    NSURL *getWoeId = [NSURL URLWithString:[[NSString stringWithFormat: @"http://query.yahooapis.com/v1/public/yql?q=select%%20woeid%%20from%%20geo.places%%20where%%20text%%3D%%22%@%%22&format=json",[[_tfInput text] compare: @""] == 0 ? @"minsk" : [_tfInput text]] stringByReplacingOccurrencesOfString:@" " withString:@"%20"]];
+    NSData *woeidQuery = [NSData dataWithContentsOfURL: getWoeId];
+    NSDictionary *woeidJSONObject = [NSJSONSerialization JSONObjectWithData:woeidQuery options:NSJSONReadingMutableContainers error:nil];
+    
+    if (woeidJSONObject[@"query"][@"results"] == nil) return; // Avoid null results.
+    
+    NSString *townWoeId = woeidJSONObject[@"query"][@"results"][@"place"][0][@"woeid"];
+    NSURL *url = [[NSURL alloc] initWithString:[NSString stringWithFormat:@"http://query.yahooapis.com/v1/public/yql?q=select%%20item%%20from%%20weather.forecast%%20where%%20woeid%%20%%3D%%20%@&format=json", townWoeId]];
     
     NSData *contents = [[NSData alloc] initWithContentsOfURL:url];
-    NSDictionary *forecasting = [NSJSONSerialization JSONObjectWithData:contents options:NSJSONReadingMutableContainers error:nil];
-    NSString *weather = forecasting[@"query"][@"results"][@"channel"][@"item"][@"condition"][@"temp"];
+    NSDictionary *forecast = [NSJSONSerialization JSONObjectWithData:contents options:NSJSONReadingMutableContainers error:nil];
+    
+    if (forecast[@"query"][@"results"] == nil) return; // Avoid null results.
+    
+    NSString *weather = forecast[@"query"][@"results"][@"channel"][@"item"][@"condition"][@"temp"];
     long nWeather = [weather intValue];
     
-    [_lblWeather setText: [NSString stringWithFormat: @"%@ F", weather]];
-    if (nWeather < 32) {
+    nWeather -= 32;
+    nWeather /= 1.8;
+    [_lblWeather setText: [NSString stringWithFormat: @"%ld C", nWeather]];
+    if (nWeather < 0) {
         [_lblWeather setTextColor: [UIColor blueColor]];
-    } else if (nWeather > 32) {
+    } else if (nWeather > 0) {
         [_lblWeather setTextColor: [UIColor redColor]];
     }
     
     [_lblDate setText: [NSString stringWithFormat: @"%@ %@ %@",
-                        forecasting[@"query"][@"results"][@"channel"][@"item"][@"title"],
-                        forecasting[@"query"][@"results"][@"channel"][@"item"][@"forecast"][0][@"day"],
-                        forecasting[@"query"][@"results"][@"channel"][@"item"][@"forecast"][0][@"date"]]];
-    [_lblWeatherText setText: forecasting[@"query"][@"results"][@"channel"][@"item"][@"forecast"][0][@"text"]];
+                        forecast[@"query"][@"results"][@"channel"][@"item"][@"title"],
+                        forecast[@"query"][@"results"][@"channel"][@"item"][@"forecast"][0][@"day"],
+                        forecast[@"query"][@"results"][@"channel"][@"item"][@"forecast"][0][@"date"]]];
+    [_lblWeatherText setText: forecast[@"query"][@"results"][@"channel"][@"item"][@"forecast"][0][@"text"]];
 }
 
 /*
