@@ -1,4 +1,6 @@
 # Lab6TP
+
+- [ ] Push report
 ###### Task 1
 
 - [x] Frequency analyser
