@@ -23,16 +23,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    [_lblWeather setText: @""];
-//    [_lblDate setText: @""];
-//    [_lblWeatherText setText: @""];
-//    [_lblWeatherText setTextAlignment: NSTextAlignmentCenter];
     [_lblWeather setTextAlignment: NSTextAlignmentCenter];
     [_lblWeatherText setTextAlignment: NSTextAlignmentCenter];
     [_lblDate setNumberOfLines: 0];
-//    [_btnDo setTitle: @"Update" forState: UIControlStateNormal];
-//    [_btnDo setTitle: @"Update" forState: UIControlStateSelected];
-//    [_btnDo setTitle: @"Update" forState: UIControlStateHighlighted];
 }
 
 - (void)didReceiveMemoryWarning {
