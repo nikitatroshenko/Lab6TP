@@ -1,6 +1,6 @@
 # Lab6TP
 
-- [x] Push [report](https://docs.google.com/document/d/1buhKnCLK9YUybFUFAMq5odidUFqfMFIBuZutq3CBt0w/edit?usp=sharing)
+- [x] Add link to [report](https://docs.google.com/document/d/1buhKnCLK9YUybFUFAMq5odidUFqfMFIBuZutq3CBt0w/edit?usp=sharing)
 
 ###### Task 1
 
